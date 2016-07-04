@@ -6,14 +6,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Webfactory\ContentMapping\Test;
+namespace H69\ContentMapping\Tests;
 
 /**
- * Dummy for objects in the source system.
- *
- * @final by default.
+ * Dummy for objects
  */
-class SourceObjectDummy
+class ObjectDummy
 {
 
 }

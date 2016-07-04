@@ -1,16 +1,14 @@
 <?php
 
-namespace Webfactory\ContentMapping;
+namespace H69\ContentMapping\Mapper;
 
 /**
- * Result of \Webfactory\ContentMapping\Mapper::map.
- *
- * @final by default.
+ * Result of \H69\ContentMapping\Mapper::map.
  */
-final class MapResult
+class Result
 {
     /**
-     * An object (not necessarily the same as the input $destinationObject of \Webfactory\ContentMapping\Mapper::map)
+     * An object (not necessarily the same as the input $destinationObject of \H69\ContentMapping\Mapper::map)
      * that was initialized with the values of the $destinationObject and then received the content of the
      * $sourceObject.
      *
@@ -23,20 +21,20 @@ final class MapResult
      *
      * @var mixed|null $destinationObject
      */
-    private $object;
+    protected $object;
 
     /**
      * Wether the object has been changed or not during the mapping.
      *
      * @var boolean
      */
-    private $objectHasChanged;
+    protected $objectHasChanged;
 
     /**
      * Convenience constructor to create a MapResult when the mapping
      * yields no changes and no update needs to be done.
      *
-     * @return MapResult
+     * @return Result
      */
     public static function unchanged()
     {
@@ -49,7 +47,7 @@ final class MapResult
      *
      * @param $object mixed The updated object
      *
-     * @return MapResult
+     * @return Result
      */
     public static function changed($object)
     {

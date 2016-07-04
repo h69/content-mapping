@@ -31,12 +31,12 @@ Concept
 
 ![Class diagram](doc/class-diagram.png)
 
-The content-mapping process is based on four parts: the `Synchronizer`, a ``SourceAdapter``, a ``Mapper`` and a
+The content-mapping process is based on four parts: the `Synchronizer`, a ``SourceAdapter``, a ``callable Mapper`` and a
 ``DestinationAdapter``. The entry point is ``Synchronizer->synchronize()``: there, the Synchronizer gets an Iterator
 from the ``SourceAdapter->getObjectsOrderedById()`` as well as an Iterator from the
 ``DestinationAdapter->getObjectsOrderedById()``, and compares the objects in each one. During the comparison, it deletes
 outdated objects (``DestinationAdapter->delete()``), stores a new objects (``DestinationAdapter->createObject()``) and
-updates existing objects in the destination system (``Mapper->map()``).
+updates existing objects in the destination system (``callable Mapper``).
  
 ``DestinationAdapter->updated()`` and ``DestinationAdapter->commit()`` are only hooks for external change tracking, to
 say an object has been updated or both Iterators have been processed, i.e. changes can be persisted.
@@ -45,26 +45,23 @@ say an object has been updated or both Iterators have been processed, i.e. chang
 Usage
 -----
 
-To construct a ``Synchronizer``, you need implementations for the ``SourceAdaper``, ``Mapper`` and
+To construct a ``Synchronizer``, you need implementations for the ``SourceAdaper``, ``callable Mapper`` and
 ``DestinationAdapter``. Please find abstract templates and ready-to-use generic implementations of SourceAdapters and
 DestinationAdapters in the [webfactory/content-mapping-*](https://github.com/search?q=webfactory%2Fcontent-mapping)
 packages. The Mapper usually is very specific for your project, so you probably want to implement it in your
 application.
 
 ```php
-use Webfactory\ContentMapping\Synchronizer;
-use Webfactory\ContentMapping\SourceAdapter\Propel\GenericPropelSourceAdapter;
+use H69\ContentMapping\Synchronizer;
 
 $sourceAdapter = ...; // see the readme of the corresponding package on how to construct it
-$mapper = ...; // construct your own implementation
 $destinationAdapter = ...; // see the readme of the corresponding package on how to construct it
-$logger = ...; // just a PSR-3 logger
+$typeToSynchronize = 'pages';
 
-$classNameToSynchronize = 'MyClass';
-$force = false; // if true, objects in destination system will be updated even if no changes are detected
+$synchronizer = new Synchronizer($sourceAdapter, $destinationAdapter);
+$synchronizer->synchronize($typeToSynchronize, function($objectA, $objectB){
 
-$synchronizer = new Synchronizer($sourceAdapter, $mapper, $destinationAdapter, $logger);
-$synchronizer->synchronize($classNameToSynchronize, $force);
+});
 ```
 
 

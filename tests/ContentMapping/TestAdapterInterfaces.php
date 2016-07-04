@@ -6,14 +6,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Webfactory\ContentMapping\Test;
+namespace H69\ContentMapping\Tests;
 
-/**
- * Dummy for objects in the destination system.
- *
- * @final by default.
- */
-class DestinationObjectDummy
+use H69\ContentMapping\Adapter;
+use H69\ContentMapping\Adapter\ProgressListener;
+
+interface TestAdapterInterfaces extends Adapter, ProgressListener
 {
 
 }

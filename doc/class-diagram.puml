@@ -3,41 +3,36 @@
 hide empty methods
 hide empty fields
 
+class Indexer {
+    +__construct(Adapter $adapter, Adapter $adapter)
+    +index(string $type, callable $mapCallback)
+}
+
 class Synchronizer {
-    +synchronize($className, $force)
+    +__construct(Adapter $adapter, Adapter $adapter)
+    +synchronize(string $type, callable $mapCallback)
 }
 
-interface SourceAdapter {
-    +getObjectsOrderedById()
-}
-
-interface Mapper {
-    +map($sourceObject, $destinationObject) : MapResult
-    +idOf($sourceObject):int
-    +setForce($force)
-}
-
-interface DestinationAdapter {
-    +getObjectsOrderedById($className)
-    +createObject($id, $className)
-    +delete($objectInDestinationSystem)
-    +updated($objectInDestinationSystem)
+interface Adapter {
+    +getObjectsOrderedById($type, $indexQueue = false)
+    +idOf($object):int
+    +createObject($id, $type)
+    +delete($object)
+    +updated($object)
     +commit()
-    +idOf($objectInDestinationSystem):int
 }
 
-interface UpdateableObjectProviderInterface {
-    +prepareUpdate($destinationObject):mixed
+interface UpdateableObjectProvider {
+    +prepareUpdate($object):mixed
 }
-note bottom: By implementing this, DestinationAdapter\ncan use different objects for updates than\nthose returned from getObjectsOrderedById().
+note bottom: By implementing this, Adapter can use different\nobjects for updates than those returned from\ngetObjectsOrderedById($type).
 
-interface ProgressListenerInterface {
+interface ProgressListener {
     +afterObjectProcessed()
 }
-note bottom: When DestinationAdapters implement this,\nafterObjectProcessed() will be called after\nevery step the Synchronizer made.
+note bottom: When Adapters implement this,\nafterObjectProcessed() will be called after\nevery step the Synchronizer made.
 
-Synchronizer --> SourceAdapter
-Synchronizer --> Mapper
-Synchronizer --> DestinationAdapter
+Synchronizer --> Adapter
+Indexer --> Adapter
 
 @enduml

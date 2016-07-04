@@ -1,11 +1,11 @@
 <?php
-namespace Webfactory\ContentMapping;
+namespace H69\ContentMapping\Adapter;
 
 /**
- * When a DestinationAdapter implementation also implements this interface,
+ * When an Adapter implementation also implements this interface,
  * it will be notified after every step the Synchronizer made.
  */
-interface ProgressListenerInterface
+interface ProgressListener
 {
     /**
      * Callback method that will be called after every single object has been processed. That is,

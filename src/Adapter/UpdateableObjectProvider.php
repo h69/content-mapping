@@ -1,5 +1,5 @@
 <?php
-namespace Webfactory\ContentMapping;
+namespace H69\ContentMapping\Adapter;
 
 /**
  * Additional interface a DestinationAdapter can implement if it wishes to have different objects
@@ -17,7 +17,7 @@ namespace Webfactory\ContentMapping;
  * to the destination) can be pruned/GC'd after the update has been performed, while the
  * result set must be kept around until the entire process has finished.
  */
-interface UpdateableObjectProviderInterface
+interface UpdateableObjectProvider
 {
     /**
      * Create the object instance that can be used to update data in the target system.
