@@ -1,15 +1,15 @@
 <?php
-/*
- * (c) webfactory GmbH <info@webfactory.de>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace H69\ContentMapping;
 
 use Iterator;
 
+/**
+ * Interface Adapter
+ * default interface to implement when creating a source/destination adapter
+ * for using in Synchronizer or Indexer
+ *
+ * @package H69\ContentMapping
+ */
 interface Adapter
 {
     const STATUS_NEW = 1;
@@ -17,10 +17,11 @@ interface Adapter
     const STATUS_DELETE = 3;
 
     /**
-     * Get an Iterator over all $className objects in the destination system, ordered by their ascending IDs.
+     * Get an Iterator over all $type objects in the source/destination system, ordered by their ascending IDs.
      *
-     * @param string $type
-     * @param string $indexQueue
+     * @param string $type       Type of Objects to return
+     * @param string $indexQueue Whether all Objects or only new, updated or deleted Objects are returned for indexing
+     *
      * @return Iterator
      */
     public function getObjectsOrderedById($type, $indexQueue = false);
@@ -29,6 +30,7 @@ interface Adapter
      * Get the id of an object
      *
      * @param mixed $object
+     *
      * @return int
      */
     public function idOf($object);
@@ -37,6 +39,7 @@ interface Adapter
      * Get the current status of an object (NEW, UPDATE or DELETE)
      *
      * @param mixed $object
+     *
      * @return int
      */
     public function statusOf($object);
@@ -44,8 +47,9 @@ interface Adapter
     /**
      * Create a new object in the target system identified by ($id and $type).
      *
-     * @param int $id
-     * @param string $type
+     * @param int    $id   ID of the newly created Object
+     * @param string $type Type of the newly created Object
+     *
      * @return mixed
      */
     public function createObject($id, $type);

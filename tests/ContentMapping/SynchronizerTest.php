@@ -1,19 +1,15 @@
 <?php
-/*
- * (c) webfactory GmbH <info@webfactory.de>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace H69\ContentMapping\Tests;
 
 use H69\ContentMapping\Adapter;
-use H69\ContentMapping\Mapper\Result;
 use H69\ContentMapping\Synchronizer;
+use H69\ContentMapping\Mapper\Result;
 
 /**
- * Tests for the Synchronize.
+ * Class SynchronizerTest
+ * tests for the Synchronize
+ *
+ * @package H69\ContentMapping\Tests
  */
 class SynchronizerTest extends \PHPUnit_Framework_TestCase
 {
@@ -66,8 +62,8 @@ class SynchronizerTest extends \PHPUnit_Framework_TestCase
             ->method('rewind');
         $this->setUpDestinationToReturn($destinationQueue);
 
-        $this->synchronizer->synchronize($this->type, function($srcObject, $destObject){
-
+        $this->synchronizer->synchronize($this->type, function () {
+            return Result::unchanged();
         });
     }
 
@@ -82,8 +78,8 @@ class SynchronizerTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException(null);
 
-        $this->synchronizer->synchronize($this->type, function($srcObject, $destObject){
-
+        $this->synchronizer->synchronize($this->type, function () {
+            return Result::unchanged();
         });
     }
 
@@ -108,7 +104,7 @@ class SynchronizerTest extends \PHPUnit_Framework_TestCase
             ->with($idOfNewSourceObject, $this->type)
             ->will($this->returnValue($newlyCreatedObject));
 
-        $this->synchronizer->synchronize($this->type, function($srcObject, $destObject){
+        $this->synchronizer->synchronize($this->type, function () {
             return Result::unchanged();
         });
     }
@@ -144,7 +140,7 @@ class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->destination->expects($this->once())
             ->method('commit');
 
-        $this->synchronizer->synchronize($this->type, function($srcObject, $destObject){
+        $this->synchronizer->synchronize($this->type, function () {
             return Result::unchanged();
         });
     }
@@ -164,8 +160,8 @@ class SynchronizerTest extends \PHPUnit_Framework_TestCase
             ->method('delete')
             ->with($outdatedDestinationObject);
 
-        $this->synchronizer->synchronize($this->type, function($srcObject, $destObject){
-
+        $this->synchronizer->synchronize($this->type, function () {
+            return Result::unchanged();
         });
     }
 
@@ -192,8 +188,8 @@ class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->destination->expects($this->once())
             ->method('commit');
 
-        $this->synchronizer->synchronize($this->type, function($srcObject, $destObject){
-
+        $this->synchronizer->synchronize($this->type, function () {
+            return Result::unchanged();
         });
     }
 
@@ -216,7 +212,7 @@ class SynchronizerTest extends \PHPUnit_Framework_TestCase
             ->method('idOf')
             ->will($this->returnValue($sameIdForSourceAndDestinationObject));
 
-        $this->synchronizer->synchronize($this->type, function($srcObject, $destObject) use ($olderVersionOfDestinationObject) {
+        $this->synchronizer->synchronize($this->type, function () use ($olderVersionOfDestinationObject) {
             return Result::changed($olderVersionOfDestinationObject);
         });
     }
@@ -251,7 +247,7 @@ class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->destination->expects($this->once())
             ->method('commit');
 
-        $this->synchronizer->synchronize($this->type, function($srcObject, $destObject) use ($olderVersionOfDestinationObject) {
+        $this->synchronizer->synchronize($this->type, function () use ($olderVersionOfDestinationObject) {
             return Result::changed($olderVersionOfDestinationObject);
         });
     }
@@ -285,7 +281,7 @@ class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->destination->expects($this->once())
             ->method('commit');
 
-        $this->synchronizer->synchronize($this->type, function($srcObject, $destObject){
+        $this->synchronizer->synchronize($this->type, function () {
             return Result::unchanged();
         });
     }
@@ -316,7 +312,7 @@ class SynchronizerTest extends \PHPUnit_Framework_TestCase
             ->with($idOfSourceObject, $this->type)
             ->will($this->returnValue($newlyCreatedObject));
 
-        $this->synchronizer->synchronize($this->type, function($srcObject, $destObject) use ($newlyCreatedObject) {
+        $this->synchronizer->synchronize($this->type, function () use ($newlyCreatedObject) {
             return Result::changed($newlyCreatedObject);
         });
     }
@@ -345,7 +341,7 @@ class SynchronizerTest extends \PHPUnit_Framework_TestCase
             ->method('delete')
             ->with($destinationObject);
 
-        $this->synchronizer->synchronize($this->type, function($srcObject, $destObject) use ($destinationObject) {
+        $this->synchronizer->synchronize($this->type, function () use ($destinationObject) {
             return Result::changed($destinationObject);
         });
     }

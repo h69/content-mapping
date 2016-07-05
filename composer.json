@@ -1,26 +1,26 @@
 {
-  "name": "h69/content-mapping",
-  "description": "Mini framework for mapping content from a source to a destination system, e.g. from Propel objects to Solr or from Doctrine entities to ElasticSearch.",
-  "minimum-stability": "stable",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Thorsten Hogenkamp",
-      "email": "thorsten.hogenkamp@udg.de",
-      "role": "Developer"
+    "name": "h69/content-mapping",
+    "description": "Mini framework for mapping content from a source to a destination system, e.g. from Propel objects to Solr or from Doctrine entities to ElasticSearch.",
+    "minimum-stability": "stable",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Thorsten Hogenkamp",
+            "email": "thorsten.hogenkamp@udg.de",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.0",
+        "satooshi/php-coveralls": "~0.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "H69\\ContentMapping\\": "src",
+            "H69\\ContentMapping\\Tests\\": "tests/ContentMapping"
+        }
     }
-  ],
-  "require": {
-    "php": ">=5.5.0"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "~4.0",
-    "satooshi/php-coveralls": "~0.6"
-  },
-  "autoload": {
-    "psr-4": {
-      "H69\\ContentMapping\\": "src",
-      "H69\\ContentMapping\\Tests\\": "tests/ContentMapping"
-    }
-  }
 }

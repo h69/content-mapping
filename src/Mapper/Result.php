@@ -3,19 +3,21 @@
 namespace H69\ContentMapping\Mapper;
 
 /**
- * Result of \H69\ContentMapping\Mapper::map.
+ * Class Result
+ * used on return statement of mapping function
+ *
+ * @package H69\ContentMapping\Mapper
  */
 class Result
 {
     /**
-     * An object (not necessarily the same as the input $destinationObject of \H69\ContentMapping\Mapper::map)
-     * that was initialized with the values of the $destinationObject and then received the content of the
+     * An object that was initialized with the values of the $destinationObject and then received the content of the
      * $sourceObject.
      *
      * E.g. a solarium client as a DestinationAdapter gives you readonly Documents as $destinationObject. In this case,
-     * the mapper cannot write on the $destinationObject itself, so $object will be a different (writable) object than
-     * $destinationObject but with the same values. A Doctrine client as the DestinationAdapter gives you writable
-     * entities managed by the EntityManager, so $object should be the very same object as $destinationObject.
+     * the mapping function cannot write on the $destinationObject itself, so $object will be a different (writable)
+     * object than $destinationObject but with the same values. A Doctrine client as the DestinationAdapter gives you
+     * writable entities managed by the EntityManager, so $object should be the very same object as $destinationObject.
      *
      * Can be null if the $objectHasChanged is false.
      *
@@ -24,7 +26,7 @@ class Result
     protected $object;
 
     /**
-     * Wether the object has been changed or not during the mapping.
+     * Whether the object has been changed or not during the mapping.
      *
      * @var boolean
      */
@@ -56,7 +58,7 @@ class Result
 
     /**
      * @param mixed|null $object
-     * @param bool  $objectHasChanged
+     * @param bool       $objectHasChanged
      */
     public function __construct($object, $objectHasChanged)
     {

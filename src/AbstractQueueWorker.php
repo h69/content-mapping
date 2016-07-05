@@ -1,16 +1,13 @@
 <?php
-/*
- * (c) webfactory GmbH <info@webfactory.de>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace H69\ContentMapping;
+
 use H69\ContentMapping\Mapper\Result;
 
 /**
+ * Class AbstractQueueWorker
  * The AbstractQueueWorker contains constructor and functions for insert, update, delete and notify
+ *
+ * @package H69\ContentMapping
  */
 abstract class AbstractQueueWorker
 {
@@ -53,8 +50,9 @@ abstract class AbstractQueueWorker
      * @param Adapter $source
      * @param Adapter $destination
      */
-    public function __construct($source, $destination) {
-        if(!$source instanceof Adapter || !$destination instanceof Adapter){
+    public function __construct($source, $destination)
+    {
+        if (!$source instanceof Adapter || !$destination instanceof Adapter) {
             throw new \InvalidArgumentException('source and destination have to implement adapter interface');
         }
 
@@ -74,14 +72,14 @@ abstract class AbstractQueueWorker
 
         $mapResult = call_user_func_array($this->mapCallback, [
             $sourceObject,
-            $newObjectInDestination
+            $newObjectInDestination,
         ]);
-        if($mapResult instanceof Result){
+        if ($mapResult instanceof Result) {
             $this->destination->updated($mapResult->getObject());
         }
 
         $this->sourceQueue->next();
-        $this->messages[] = 'Inserted object with id '.$this->source->idOf($sourceObject);
+        $this->messages[] = 'Inserted object with id ' . $this->source->idOf($sourceObject);
     }
 
     /**
@@ -91,7 +89,7 @@ abstract class AbstractQueueWorker
     {
         $this->destination->delete($destinationObject);
         $this->destinationQueue->next();
-        $this->messages[] = 'Deleted object with id '.$this->destination->idOf($destinationObject);
+        $this->messages[] = 'Deleted object with id ' . $this->destination->idOf($destinationObject);
     }
 
     /**
@@ -106,13 +104,13 @@ abstract class AbstractQueueWorker
 
         $mapResult = call_user_func_array($this->mapCallback, [
             $sourceObject,
-            $destinationObject
+            $destinationObject,
         ]);
-        if($mapResult instanceof Result && $mapResult->getObjectHasChanged() === true){
+        if ($mapResult instanceof Result && $mapResult->getObjectHasChanged() === true) {
             $this->destination->updated($mapResult->getObject());
-            $this->messages[] = 'Updated object with id '.$this->source->idOf($sourceObject);
+            $this->messages[] = 'Updated object with id ' . $this->source->idOf($sourceObject);
         } else {
-            $this->messages[] = 'Kept object with id '.$this->source->idOf($sourceObject);
+            $this->messages[] = 'Kept object with id ' . $this->source->idOf($sourceObject);
         }
 
         $this->destinationQueue->next();
