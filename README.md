@@ -4,22 +4,17 @@ content-mapping
 [![Build Status](https://travis-ci.org/h69/content-mapping.svg?branch=3.x)](https://travis-ci.org/h69/content-mapping)
 [![Coverage Status](https://coveralls.io/repos/github/h69/content-mapping/badge.svg?branch=3.x)](https://coveralls.io/github/h69/content-mapping?branch=3.x)
 
-content-mapping is a mini framework for mapping content from a source to a destination system. E.g. from Propel objects
-to Solr, from Doctrine entities to ElasticSearch or from one XML structure to another. It features interfaces to guide
-you on your mapping way and ships with some abstract implementation helpers or magic implementations.
+content-mapping is a mini framework for mapping content from a source to a destination system. E.g. from Propel objects to Solr, from Doctrine entities to ElasticSearch or from one XML structure to another. It features interfaces to guide you on your mapping way and ships with some abstract implementation helpers or magic implementations.
 
-In easy situations, you may want to consider other libraries instead. E.g. if in a Symfony2 project you want to index
-Doctrine entities in a Solr server, you may want to consider the great [floriansemm/solr-bundle](/floriansemm/SolrBundle).
-But that and other libraries have shortcomings in more complex situation, e.g. when you want to index attributes of
-related entities. That's why we present you content-mapping with a more general approach.
+ATTENTION! This repository is a fork of [webfactory/content-mapping] (https://github.com/webfactory/content-mapping) that aims to have only one type of adapter (instead of source- and destination-adapter) with the ability to also handle indexing instead of synchronizing. The difference between indexing and synchronizing is that indexing returns a queue of items that have been created, updated or deleted instead of returning all items ordered by their id.
 
 
 Installation
 ------------
 
-Add the content-mapping dependency by running the command (see http://getcomposer.org/):
+Add this long-time fork of content-mapping as dependency by running the command (see http://getcomposer.org/):
 
-    php composer.phar require webfactory/content-mapping
+    php composer.phar require h69/content-mapping
 
 and run
 
@@ -44,14 +39,11 @@ say an object has been updated or both Iterators have been processed, i.e. chang
 Usage
 -----
 
-To construct a ``Synchronizer``, you need implementations for the ``SourceAdaper``, ``callable Mapper`` and
-``DestinationAdapter``. Please find abstract templates and ready-to-use generic implementations of SourceAdapters and
-DestinationAdapters in the [webfactory/content-mapping-*](https://github.com/search?q=webfactory%2Fcontent-mapping)
-packages. The Mapper usually is very specific for your project, so you probably want to implement it in your
-application.
+To construct a ``Synchronizer``, you need two implementations for the ``Adapter`` (source and destination) and a callback to map properties from source to destination object. Please find abstract templates and ready-to-use generic implementations of Adapters in the [h69/content-mapping\-\*](https://github.com/search?q=h69%2Fcontent-mapping) or adapt one of [webfactory/content-mapping\-\*](https://github.com/search?q=webfactory%2Fcontent-mapping) to work with the updated interface of this fork. The Mapper usually is very specific for your project, so you probably want to implement it in your application.
 
 ```php
 use H69\ContentMapping\Synchronizer;
+use H69\ContentMapping\Mapper\Result;
 
 $sourceAdapter = ...; // see the readme of the corresponding package on how to construct it
 $destinationAdapter = ...; // see the readme of the corresponding package on how to construct it
@@ -59,7 +51,26 @@ $typeToSynchronize = 'pages';
 
 $synchronizer = new Synchronizer($sourceAdapter, $destinationAdapter);
 $synchronizer->synchronize($typeToSynchronize, function($objectA, $objectB){
+    ...
+    //return Result::unchanged();
+    return Result::changed($updatedObjectB);
+});
+```
 
+To construct a ``Indexer``, you need two implementations for the ``Adapter`` (source and destination) and a callback to map properties from source to destination object. Please find abstract templates and ready-to-use generic implementations of Adapters in the [h69/content-mapping\-\*](https://github.com/search?q=h69%2Fcontent-mapping) or adapt one of [webfactory/content-mapping\-\*](https://github.com/search?q=webfactory%2Fcontent-mapping) to work with the updated interface of this fork. The Mapper usually is very specific for your project, so you probably want to implement it in your application.
+
+```php
+use H69\ContentMapping\Indexer;
+
+$sourceAdapter = ...; // see the readme of the corresponding package on how to construct it
+$destinationAdapter = ...; // see the readme of the corresponding package on how to construct it
+$typeToIndex = 'pages';
+
+$indexer = new Indexer($sourceAdapter, $destinationAdapter);
+$indexer->index($typeToSynchronize, function($objectA, $objectB){
+    ...
+    //return Result::unchanged();
+    return Result::changed($updatedObjectB);
 });
 ```
 
@@ -67,9 +78,7 @@ $synchronizer->synchronize($typeToSynchronize, function($objectA, $objectB){
 Credits, Copyright and License
 ------------------------------
 
-This project was started at webfactory GmbH, Bonn.
+This project/fork was started at [webfactory GmbH, Bonn](https://www.webfactory.de) and was/will be further developed by
+- [h69](https://github.com/h69)
 
-- <https://www.webfactory.de>
-- <https://twitter.com/webfactory>
-
-Copyright 2015-2016 webfactory GmbH, Bonn. Code released under [the MIT license](LICENSE).
+Copyright 2016. Code released under [the MIT license](LICENSE).
