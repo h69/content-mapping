@@ -8,6 +8,12 @@
             "name": "Thorsten Hogenkamp",
             "email": "thorsten.hogenkamp@udg.de",
             "role": "Developer"
+        },
+        {
+            "name": "webfactory GmbH",
+            "email": "info@webfactory.de",
+            "homepage": "http://www.webfactory.de",
+            "role": "Developer"
         }
     ],
     "require": {
