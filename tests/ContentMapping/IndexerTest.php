@@ -50,6 +50,46 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function indexConstructWithoutSourceAdapterInterface()
+    {
+        $this->setExpectedException(\InvalidArgumentException::class);
+        $source = new \stdClass();
+        new Indexer($source, $this->destination);
+    }
+
+    /**
+     * @test
+     */
+    public function indexConstructWithoutDestinationAdapterInterface()
+    {
+        $this->setExpectedException(\InvalidArgumentException::class);
+        $destination = new \stdClass();
+        new Indexer($this->source, $destination);
+    }
+
+    /**
+     * @test
+     */
+    public function indexMissingType()
+    {
+        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->indexer->index('', function () {
+            return Result::unchanged();
+        });
+    }
+
+    /**
+     * @test
+     */
+    public function indexMissingCallback()
+    {
+        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->indexer->index($this->type, 'not_a_callback');
+    }
+
+    /**
+     * @test
+     */
     public function indexRewindsOnlySourceQueue()
     {
         $sourceQueue = $this->getMock('\Iterator');
@@ -175,7 +215,7 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
 
         $this->source->expects($this->once())
             ->method('statusOf')
-            ->will($this->returnValue(Adapter::STATUS_NEW));
+            ->will($this->returnValue(Adapter::STATUS_UPDATE));
 
         $newlyCreatedObject = new \stdClass();
         $this->destination->expects($this->once())

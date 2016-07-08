@@ -50,6 +50,46 @@ class SynchronizerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function indexConstructWithoutSourceAdapterInterface()
+    {
+        $this->setExpectedException(\InvalidArgumentException::class);
+        $source = new \stdClass();
+        new Synchronizer($source, $this->destination);
+    }
+
+    /**
+     * @test
+     */
+    public function indexConstructWithoutDestinationAdapterInterface()
+    {
+        $this->setExpectedException(\InvalidArgumentException::class);
+        $destination = new \stdClass();
+        new Synchronizer($this->source, $destination);
+    }
+
+    /**
+     * @test
+     */
+    public function synchronizeMissingType()
+    {
+        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->synchronizer->synchronize('', function () {
+            return Result::unchanged();
+        });
+    }
+
+    /**
+     * @test
+     */
+    public function synchronizeMissingCallback()
+    {
+        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->synchronizer->synchronize($this->type, 'not_a_callback');
+    }
+
+    /**
+     * @test
+     */
     public function synchronizeRewindsSourceQueueAndDestinationQueue()
     {
         $sourceQueue = $this->getMock('\Iterator');
@@ -124,11 +164,13 @@ class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->source->expects($this->any())
             ->method('idOf')
             ->will($this->returnValue($idOfNewSourceObject));
+
         $newlyCreatedObject = new \stdClass();
         $this->destination->expects($this->once())
             ->method('createObject')
             ->with($idOfNewSourceObject, $this->type)
             ->will($this->returnValue($newlyCreatedObject));
+
         $this->destination->expects($this->once())
             ->method('updated');
 
@@ -237,6 +279,10 @@ class SynchronizerTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($sameIdForSourceAndDestinationObject));
 
         $this->destination->expects($this->once())
+            ->method('prepareUpdate')
+            ->with($olderVersionOfDestinationObject);
+
+        $this->destination->expects($this->once())
             ->method('updated')
             ->with($olderVersionOfDestinationObject);
 
@@ -270,6 +316,10 @@ class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->destination->expects($this->any())
             ->method('idOf')
             ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+
+        $this->destination->expects($this->once())
+            ->method('prepareUpdate')
+            ->with($olderVersionOfDestinationObject);
 
         $this->destination->expects($this->never())
             ->method('updated');
