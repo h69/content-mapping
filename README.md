@@ -61,6 +61,7 @@ To construct a ``Indexer``, you need two implementations for the ``Adapter`` (so
 
 ```php
 use H69\ContentMapping\Indexer;
+use H69\ContentMapping\Mapper\Result;
 
 $sourceAdapter = ...; // see the readme of the corresponding package on how to construct it
 $destinationAdapter = ...; // see the readme of the corresponding package on how to construct it
