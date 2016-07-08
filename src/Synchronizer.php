@@ -71,11 +71,9 @@ class Synchronizer extends AbstractQueueWorker
             $this->insert($sourceObject);
         } elseif ($destinationObjectId < $sourceObjectId) {
             $this->delete($destinationObject);
-        } elseif ($destinationObjectId === $sourceObjectId) {
-            $this->update($sourceObject, $destinationObject);
         } else {
-            $this->destinationQueue->next();
-            $this->sourceQueue->next();
+            // $destinationObjectId === $sourceObjectId
+            $this->update($sourceObject, $destinationObject);
         }
 
         $this->notifyProgress();
