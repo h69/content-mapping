@@ -10,6 +10,12 @@
         </testsuite>
     </testsuites>
 
+    <filter>
+        <whitelist>
+            <directory suffix=".php">src</directory>
+        </whitelist>
+    </filter>
+
     <php>
         <server name="KERNEL_DIR" value="tests/"/>
     </php>
