@@ -25,16 +25,16 @@ Concept
 
 ![Class diagram](doc/class-diagram.png)
 
-The content-mapping process is based on four parts: the `Synchronizer`, a ``SourceAdapter``, a ``callable Mapper`` and a
-``DestinationAdapter``. The entry point is ``Synchronizer->synchronize()``: there, the Synchronizer gets an Iterator
-from the ``SourceAdapter->getObjectsOrderedById()`` as well as an Iterator from the
-``DestinationAdapter->getObjectsOrderedById()``, and compares the objects in each one. During the comparison, it deletes
-outdated objects (``DestinationAdapter->delete()``), stores a new objects (``DestinationAdapter->createObject()``) and
-updates existing objects in the destination system (``callable Mapper``).
- 
-``DestinationAdapter->updated()`` and ``DestinationAdapter->commit()`` are only hooks for external change tracking, to
-say an object has been updated or both Iterators have been processed, i.e. changes can be persisted.
+The content-mapping process is based on four parts: the ``Synchronizer`` or ``Indexer``, which needs a ``SourceAdapter``, ``DestinationAdapter`` and a ``Callback Function`` to map the source structure to destination structure.
 
+**Synchronizer**
+The entry point is ``Synchronizer->synchronize()``: there, the process gets an Iterator from the ``SourceAdapter->getObjectsOrderedById()`` as well as an Iterator from the ``DestinationAdapter->getObjectsOrderedById()``, and compares the objects in each one. During the comparison (Synchronizer), it deletes outdated objects (``DestinationAdapter->delete()``), stores new objects (``DestinationAdapter->createObject()``) and updates existing objects in the destination system (``Callback Function``).
+
+**Indexer**
+The entry point is ``Indexer->index()``: there, the process gets an Iterator from the ``SourceAdapter->getObjectsOrderedById()`` and reads the status of each object (``SourceAdapter->statusOf()``). During the indexing, the returned status of the object defines whether the object will be created (``DestinationAdapter->createObject()``), updated (``Callback Function``) or deleted (``DestinationAdapter->delete()``).
+
+**Hooks**
+ ``DestinationAdapter->updated()`` and ``DestinationAdapter->commit()`` are only hooks for external change tracking, to say an object has been updated or both Iterators have been processed, i.e. changes can be persisted.
 
 Usage
 -----

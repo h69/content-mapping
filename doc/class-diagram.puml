@@ -16,6 +16,7 @@ class Synchronizer {
 interface Adapter {
     +getObjectsOrderedById($type, $indexQueue = false)
     +idOf($object):int
+    +statusOf($object):int
     +createObject($id, $type)
     +delete($object)
     +updated($object)
