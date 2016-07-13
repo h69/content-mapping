@@ -14,14 +14,19 @@ class Synchronizer {
 }
 
 interface Adapter {
-    +getObjectsOrderedById($type, $indexQueue = false)
+    +getObjectsOrderedById($type)
     +idOf($object):int
-    +statusOf($object):int
     +createObject($id, $type)
     +delete($object)
     +updated($object)
     +commit()
 }
+
+interface IndexableObjectProvider {
+    +getObjectsForIndexing($type)
+    +statusOf($object):int
+}
+note bottom: By implementing this, Adapter can\nbe used as source for Indexer class
 
 interface UpdateableObjectProvider {
     +prepareUpdate($object):mixed
@@ -35,5 +40,8 @@ note bottom: When Adapters implement this,\nafterObjectProcessed() will be calle
 
 Synchronizer --> Adapter
 Indexer --> Adapter
+Adapter -[hidden]-> IndexableObjectProvider
+Adapter -[hidden]-> UpdateableObjectProvider
+Adapter -[hidden]-> ProgressListener
 
 @enduml
