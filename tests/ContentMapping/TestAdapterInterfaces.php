@@ -7,7 +7,7 @@ use H69\ContentMapping\Adapter;
  * Interface TestAdapterInterfaces
  * @package H69\ContentMapping\Tests
  */
-interface TestAdapterInterfaces extends Adapter, Adapter\ProgressListener, Adapter\UpdateableObjectProvider
+interface TestAdapterInterfaces extends Adapter, Adapter\ProgressListener, Adapter\UpdateableObjectProvider, Adapter\IndexableObjectProvider
 {
 
 }

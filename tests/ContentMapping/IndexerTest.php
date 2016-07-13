@@ -42,7 +42,7 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->source = $this->getMock(Adapter::class);
+        $this->source = $this->getMock(TestIndexerAdapterInterfaces::class);
         $this->destination = $this->getMock(TestAdapterInterfaces::class);
         $this->indexer = new Indexer($this->source, $this->destination);
     }
@@ -137,7 +137,7 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
 
         $this->source->expects($this->once())
             ->method('statusOf')
-            ->will($this->returnValue(Adapter::STATUS_NEW));
+            ->will($this->returnValue(Adapter\IndexableObjectProvider::STATUS_NEW));
 
         $newlyCreatedObject = new \stdClass();
         $this->destination->expects($this->once())
@@ -176,7 +176,7 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
 
         $this->source->expects($this->once())
             ->method('statusOf')
-            ->will($this->returnValue(Adapter::STATUS_DELETE));
+            ->will($this->returnValue(Adapter\IndexableObjectProvider::STATUS_DELETE));
 
         $newlyCreatedObject = new \stdClass();
         $this->destination->expects($this->once())
@@ -215,7 +215,7 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
 
         $this->source->expects($this->once())
             ->method('statusOf')
-            ->will($this->returnValue(Adapter::STATUS_UPDATE));
+            ->will($this->returnValue(Adapter\IndexableObjectProvider::STATUS_UPDATE));
 
         $newlyCreatedObject = new \stdClass();
         $this->destination->expects($this->once())
@@ -245,7 +245,7 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
     private function setUpSourceToReturn(\Iterator $sourceObjects)
     {
         $this->source->expects($this->any())
-            ->method('getObjectsOrderedById')
+            ->method('getObjectsForIndexing')
             ->will($this->returnValue($sourceObjects));
     }
 
@@ -255,7 +255,7 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
     private function setUpDestinationToReturn(\Iterator $destinationObjects)
     {
         $this->destination->expects($this->any())
-            ->method('getObjectsOrderedById')
+            ->method('getObjectsForIndexing')
             ->will($this->returnValue($destinationObjects));
     }
 }

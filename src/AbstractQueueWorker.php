@@ -1,6 +1,7 @@
 <?php
 namespace H69\ContentMapping;
 
+use H69\ContentMapping\Adapter\IndexableObjectProvider;
 use H69\ContentMapping\Mapper\Result;
 
 /**
@@ -47,13 +48,13 @@ abstract class AbstractQueueWorker
     protected $messages = [];
 
     /**
-     * @param Adapter $source
-     * @param Adapter $destination
+     * @param Adapter|IndexableObjectProvider $source
+     * @param Adapter|IndexableObjectProvider $destination
      */
     public function __construct($source, $destination)
     {
         if (!$source instanceof Adapter || !$destination instanceof Adapter) {
-            throw new \InvalidArgumentException('source and destination have to implement adapter interface');
+            throw new \InvalidArgumentException('source and destination have to implement "' . Adapter::class . '"');
         }
 
         $this->source = $source;

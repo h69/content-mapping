@@ -1,8 +1,6 @@
 <?php
 namespace H69\ContentMapping;
 
-use Iterator;
-
 /**
  * Interface Adapter
  * default interface to implement when creating a source/destination adapter
@@ -12,19 +10,15 @@ use Iterator;
  */
 interface Adapter
 {
-    const STATUS_NEW = 1;
-    const STATUS_UPDATE = 2;
-    const STATUS_DELETE = 3;
 
     /**
      * Get an Iterator over all $type objects in the source/destination system, ordered by their ascending IDs.
      *
-     * @param string $type       Type of Objects to return
-     * @param string $indexQueue Whether all Objects or only new, updated or deleted Objects are returned for indexing
+     * @param string $type Type of Objects to return
      *
-     * @return Iterator
+     * @return \Iterator
      */
-    public function getObjectsOrderedById($type, $indexQueue = false);
+    public function getObjectsOrderedById($type);
 
     /**
      * Get the id of an object
@@ -34,15 +28,6 @@ interface Adapter
      * @return int
      */
     public function idOf($object);
-
-    /**
-     * Get the current status of an object (NEW, UPDATE or DELETE)
-     *
-     * @param mixed $object
-     *
-     * @return int
-     */
-    public function statusOf($object);
 
     /**
      * Create a new object in the target system identified by ($id and $type).

@@ -1,6 +1,7 @@
 <?php
 namespace H69\ContentMapping;
 
+use H69\ContentMapping\Adapter\IndexableObjectProvider;
 use H69\ContentMapping\Mapper\Result;
 
 /**
@@ -11,6 +12,19 @@ use H69\ContentMapping\Mapper\Result;
  */
 class Indexer extends AbstractQueueWorker
 {
+
+    /**
+     * @param Adapter|IndexableObjectProvider $source
+     * @param Adapter|IndexableObjectProvider $destination
+     */
+    public function __construct($source, $destination)
+    {
+        if (!$source instanceof IndexableObjectProvider) {
+            throw new \InvalidArgumentException('source has to implement "' . IndexableObjectProvider::class . '"');
+        }
+
+        parent::__construct($source, $destination);
+    }
 
     /**
      * indexes the $type objects from the source system to the destination system.
@@ -36,18 +50,18 @@ class Indexer extends AbstractQueueWorker
 
         $this->messages[] = 'Start of indexing for ' . $this->type;
 
-        $this->sourceQueue = $this->source->getObjectsOrderedById($this->type, true);
+        $this->sourceQueue = $this->source->getObjectsForIndexing($this->type);
         $this->sourceQueue->rewind();
 
         while ($this->sourceQueue->valid()) {
             $sourceObject = $this->sourceQueue->current();
             $sourceObjectStatus = $this->source->statusOf($sourceObject);
 
-            if ($sourceObjectStatus == Adapter::STATUS_NEW) {
+            if ($sourceObjectStatus == IndexableObjectProvider::STATUS_NEW) {
                 $this->insert($sourceObject);
-            } elseif ($sourceObjectStatus == Adapter::STATUS_DELETE) {
+            } elseif ($sourceObjectStatus == IndexableObjectProvider::STATUS_DELETE) {
                 $this->delete($sourceObject);
-            } elseif ($sourceObjectStatus == Adapter::STATUS_UPDATE) {
+            } elseif ($sourceObjectStatus == IndexableObjectProvider::STATUS_UPDATE) {
                 $this->update($sourceObject, null);
             }
 
