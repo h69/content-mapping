@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Content-mapping by h69</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Content-mapping</h1>
+        <h2>Mini framework for mapping content from a source to a destination system, e.g. from Propel objects to Solr or from Doctrine entities to ElasticSearch.</h2>
+        <a href="https://github.com/h69/content-mapping" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a id="content-mapping" class="anchor" href="#content-mapping" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>content-mapping</h1>
+
+<p><a href="https://travis-ci.org/h69/content-mapping"><img src="https://travis-ci.org/h69/content-mapping.svg?branch=master" alt="Build Status"></a>
+<a href="https://coveralls.io/github/h69/content-mapping?branch=master"><img src="https://coveralls.io/repos/github/h69/content-mapping/badge.svg?branch=master" alt="Coverage Status"></a></p>
+
+<p>content-mapping is a mini framework for mapping content from a source to a destination system. E.g. from Propel objects to Solr, from Doctrine entities to ElasticSearch or from one XML structure to another. It features interfaces to guide you on your mapping way and ships with some abstract implementation helpers or magic implementations.</p>
+
+<p>ATTENTION! This repository is a fork of <a href="https://github.com/webfactory/content-mapping">webfactory/content-mapping</a> that aims to have only one type of adapter (instead of source- and destination-adapter) with the ability to also handle indexing instead of synchronizing. The difference between indexing and synchronizing is that indexing returns a queue of items that have been created, updated or deleted instead of returning all items ordered by their id.</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Add this long-time fork of content-mapping as dependency by running the command (see <a href="http://getcomposer.org/">http://getcomposer.org/</a>):</p>
+
+<pre><code>php composer.phar require h69/content-mapping
+</code></pre>
+
+<p>and run</p>
+
+<pre><code>php composer.phar install
+</code></pre>
+
+<h2>
+<a id="concept" class="anchor" href="#concept" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Concept</h2>
+
+<p><img src="https://raw.githubusercontent.com/h69/content-mapping/master/doc/class-diagram.png" alt="Class diagram"></p>
+
+<p>The content-mapping process is based on four parts: the <code>Synchronizer</code> or <code>Indexer</code>, which needs a <code>SourceAdapter</code>, <code>DestinationAdapter</code> and a <code>Callback Function</code> to map the source structure to destination structure.</p>
+
+<p><strong>Synchronizer</strong>
+The entry point is <code>Synchronizer-&gt;synchronize()</code>: there, the process gets an Iterator from the <code>SourceAdapter-&gt;getObjectsOrderedById()</code> as well as an Iterator from the <code>DestinationAdapter-&gt;getObjectsOrderedById()</code>, and compares the objects in each one. During the comparison (Synchronizer), it deletes outdated objects (<code>DestinationAdapter-&gt;delete()</code>), stores new objects (<code>DestinationAdapter-&gt;createObject()</code>) and updates existing objects in the destination system (<code>Callback Function</code>).</p>
+
+<p><strong>Indexer</strong>
+The entry point is <code>Indexer-&gt;index()</code>: there, the process gets an Iterator from the <code>SourceAdapter-&gt;getObjectsOrderedById()</code> and reads the status of each object (<code>SourceAdapter-&gt;statusOf()</code>). During the indexing, the returned status of the object defines whether the object will be created (<code>DestinationAdapter-&gt;createObject()</code>), updated (<code>Callback Function</code>) or deleted (<code>DestinationAdapter-&gt;delete()</code>).</p>
+
+<p><strong>Hooks</strong>
+ <code>DestinationAdapter-&gt;updated()</code> and <code>DestinationAdapter-&gt;commit()</code> are only hooks for external change tracking, to say an object has been updated or both Iterators have been processed, i.e. changes can be persisted.</p>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>To construct a <code>Synchronizer</code>, you need two implementations for the <code>Adapter</code> (source and destination) and a callback to map properties from source to destination object. Please find abstract templates and ready-to-use generic implementations of Adapters in the <a href="https://github.com/search?q=h69%2Fcontent-mapping">h69/content-mapping-*</a> or adapt one of <a href="https://github.com/search?q=webfactory%2Fcontent-mapping">webfactory/content-mapping-*</a> to work with the updated interface of this fork. The Mapper usually is very specific for your project, so you probably want to implement it in your application.</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-k">use</span> <span class="pl-c1">H69\ContentMapping\Synchronizer</span>;</span>
+<span class="pl-s1"><span class="pl-k">use</span> <span class="pl-c1">H69\ContentMapping\Mapper\Result</span>;</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-smi">$sourceAdapter</span> <span class="pl-k">=</span> <span class="pl-k">...</span>; <span class="pl-c">// see the readme of the corresponding package on how to construct it</span></span>
+<span class="pl-s1"><span class="pl-smi">$destinationAdapter</span> <span class="pl-k">=</span> <span class="pl-k">...</span>; <span class="pl-c">// see the readme of the corresponding package on how to construct it</span></span>
+<span class="pl-s1"><span class="pl-smi">$typeToSynchronize</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>pages<span class="pl-pds">'</span></span>;</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-smi">$synchronizer</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-c1">Synchronizer</span>(<span class="pl-smi">$sourceAdapter</span>, <span class="pl-smi">$destinationAdapter</span>);</span>
+<span class="pl-s1"><span class="pl-smi">$synchronizer</span><span class="pl-k">-&gt;</span>synchronize(<span class="pl-smi">$typeToSynchronize</span>, <span class="pl-k">function</span>(<span class="pl-smi">$objectA</span>, <span class="pl-smi">$objectB</span>){</span>
+<span class="pl-s1">    <span class="pl-k">...</span></span>
+<span class="pl-s1">    <span class="pl-c">//return Result::unchanged();</span></span>
+<span class="pl-s1">    <span class="pl-k">return</span> <span class="pl-c1">Result</span><span class="pl-k">::</span>changed(<span class="pl-smi">$updatedObjectB</span>);</span>
+<span class="pl-s1">});</span></pre></div>
+
+<p>To construct a <code>Indexer</code>, you need two implementations for the <code>Adapter</code> (source and destination) and a callback to map properties from source to destination object. Please find abstract templates and ready-to-use generic implementations of Adapters in the <a href="https://github.com/search?q=h69%2Fcontent-mapping">h69/content-mapping-*</a> or adapt one of <a href="https://github.com/search?q=webfactory%2Fcontent-mapping">webfactory/content-mapping-*</a> to work with the updated interface of this fork. The Mapper usually is very specific for your project, so you probably want to implement it in your application.</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-k">use</span> <span class="pl-c1">H69\ContentMapping\Indexer</span>;</span>
+<span class="pl-s1"><span class="pl-k">use</span> <span class="pl-c1">H69\ContentMapping\Mapper\Result</span>;</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-smi">$sourceAdapter</span> <span class="pl-k">=</span> <span class="pl-k">...</span>; <span class="pl-c">// see the readme of the corresponding package on how to construct it</span></span>
+<span class="pl-s1"><span class="pl-smi">$destinationAdapter</span> <span class="pl-k">=</span> <span class="pl-k">...</span>; <span class="pl-c">// see the readme of the corresponding package on how to construct it</span></span>
+<span class="pl-s1"><span class="pl-smi">$typeToIndex</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>pages<span class="pl-pds">'</span></span>;</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-smi">$indexer</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-c1">Indexer</span>(<span class="pl-smi">$sourceAdapter</span>, <span class="pl-smi">$destinationAdapter</span>);</span>
+<span class="pl-s1"><span class="pl-smi">$indexer</span><span class="pl-k">-&gt;</span>index(<span class="pl-smi">$typeToSynchronize</span>, <span class="pl-k">function</span>(<span class="pl-smi">$objectA</span>, <span class="pl-smi">$objectB</span>){</span>
+<span class="pl-s1">    <span class="pl-k">...</span></span>
+<span class="pl-s1">    <span class="pl-c">//return Result::unchanged();</span></span>
+<span class="pl-s1">    <span class="pl-k">return</span> <span class="pl-c1">Result</span><span class="pl-k">::</span>changed(<span class="pl-smi">$updatedObjectB</span>);</span>
+<span class="pl-s1">});</span></pre></div>
+
+<h2>
+<a id="credits-copyright-and-license" class="anchor" href="#credits-copyright-and-license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Credits, Copyright and License</h2>
+
+<p>This project/fork was started at <a href="https://www.webfactory.de">webfactory GmbH, Bonn</a> and was/will be further developed by</p>
+
+<ul>
+<li><a href="https://github.com/h69">h69</a></li>
+</ul>
+
+<p>Copyright 2016. Code released under <a href="LICENSE">the MIT license</a>.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/h69/content-mapping/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/h69/content-mapping/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/h69/content-mapping"></a> is maintained by <a href="https://github.com/h69">h69</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
